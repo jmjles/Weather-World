@@ -4,9 +4,9 @@ import WeatherCard from "../weatherCard/WeatherCard.tsx";
 
 const Forcast = ({ Days }: props) => {
   return (
-    <Grid container>
+    <Grid container spacing={2} justifyContent="center">
       {Days.map((day) => (
-        <Grid item>
+        <Grid item key={day.day}>
           <WeatherCard {...day} />
         </Grid>
       ))}

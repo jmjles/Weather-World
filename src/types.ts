@@ -6,3 +6,11 @@ export type Day = {
   perc: string;
   weather: string;
 };
+
+export type Location = {
+  country: string;
+  lat: number;
+  lon: number;
+  name: string;
+  state: string;
+};

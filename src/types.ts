@@ -14,3 +14,12 @@ export type Location = {
   name: string;
   state: string;
 };
+
+export type Search = {
+  handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+  handleChange: (val: string) => void;
+  locations: Location[];
+  handleLocation: React.Dispatch<React.SetStateAction<Location>>;
+  query: string;
+  selected: Location;
+};

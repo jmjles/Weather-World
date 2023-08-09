@@ -1,5 +1,5 @@
 import { Autocomplete, Grid, TextField } from "@mui/material";
-import { Location } from "../../types";
+import { Location, Search as props } from "../../types";
 
 const Search = ({
   handleChange,
@@ -51,13 +51,5 @@ const Search = ({
       </form>
     </div>
   );
-};
-type props = {
-  handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
-  handleChange: (val: string) => void;
-  locations: Location[];
-  handleLocation: React.Dispatch<React.SetStateAction<Location>>;
-  query: string;
-  selected: Location;
 };
 export default Search;

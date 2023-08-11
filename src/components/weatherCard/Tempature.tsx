@@ -11,7 +11,7 @@ const Tempature = ({ title, image, alt, content }: props) => {
         )}
       </Grid>
       <Grid item>
-        <Font variant="subtitle1" fontWeight="Bold">
+        <Font variant="subtitle2" fontWeight="Bold">
           {content}
         </Font>
       </Grid>

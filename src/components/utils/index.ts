@@ -25,6 +25,13 @@ export const formatForcastWeather = (weather: any, day: number) => {
     low: `${weather.main.temp_min}°F`,
     high: `${weather.main.temp_max}°F`,
     perc: `${weather.pop}%`,
+    code: weather.weather[0].icon,
     weather: weather.weather[0].main,
   };
 };
+
+export const getLocationName = (
+  name: string,
+  state: string | undefined,
+  country: string
+) => (state ? `${name}, ${state}, ${country}` : `${name}, ${country}`);

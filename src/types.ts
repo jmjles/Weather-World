@@ -4,6 +4,7 @@ export type Day = {
   low: string;
   high: string;
   perc: string;
+  code: string;
   weather: string;
 };
 

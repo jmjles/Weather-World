@@ -6,21 +6,23 @@ import { Day, Location } from "./types.ts";
 import {
   formatForcastWeather,
   getForcast,
-  getLocationName,
   getLocs,
 } from "./components/utils/index.ts";
 import Main from "./components/main/Main.tsx";
 import axios, { AxiosError } from "axios";
+import { dayTimes, skyColor } from "./theme.ts";
+import { DateTime } from "luxon";
 
 const App = () => {
   const [query, setQuery] = useState("thousand oaks");
   const [locations, setLocations] = useState<Location[]>([]);
   const [selected, setSelected] = useState<Location>();
   const [loading, setLoading] = useState(false);
+  const [loadingWeather, setLoadingWeather] = useState(false);
   const [fetchError, setFetchError] = useState("");
   const [data, setData] = useState<Day | undefined>();
   const [forcastData, setForcastData] = useState([]);
-
+  const [color, setColor] = useState(skyColor.black);
   const getLocations = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
@@ -50,7 +52,7 @@ const App = () => {
       setLocations([]);
       setData(undefined);
       setSelected(undefined);
-      setForcastData([])
+      setForcastData([]);
       let message = "";
       if (axios.isAxiosError(error)) {
         // errors here
@@ -69,7 +71,9 @@ const App = () => {
     if (selected) {
       const getWeather = async () => {
         try {
+          setLoadingWeather(true);
           const res2 = await getForcast(selected.lat, selected.lon);
+          setLoadingWeather(false);
           if (res2.status === 200) {
             const formatted = res2.data.list.map((d: any, i: number) =>
               formatForcastWeather(d, i)
@@ -83,8 +87,28 @@ const App = () => {
     }
   }, [selected]);
 
+  useEffect(() => {
+    if (!selected) {
+      const time = Number(
+        DateTime.now()
+          .toLocaleString({
+            hour12: false,
+            timeStyle: "short",
+          })
+          .replace(":", "")
+      );
+      if (dayTimes.night <= time && time < dayTimes.sunrise)
+        setColor(skyColor.black);
+      if (dayTimes.sunrise <= time && time < dayTimes.day)
+        setColor(skyColor.orange);
+      if (dayTimes.day <= time && time < dayTimes.evening)
+        setColor(skyColor.blue);
+      if (dayTimes.evening <= time && time < dayTimes.night)
+        setColor(skyColor.orange);
+    }
+  });
   return (
-    <div>
+    <div style={{ backgroundColor: color, width: "100vw", height: "100vh" }}>
       <Container
         style={{
           position: "absolute",
@@ -95,13 +119,20 @@ const App = () => {
       >
         <Card
           style={{
-            minHeight: "70vh",
+            height: "85vh",
             overflowY: "auto",
             overflowX: "hidden",
+            opacity: "85%",
           }}
         >
-          <Grid container justifyContent="center" direction="row" spacing={5}>
-            <Grid item>
+          <Grid
+            container
+            justifyContent="center"
+            direction="row"
+            spacing={5}
+            style={{ height: selected ? "unset" : "100%" }}
+          >
+            <Grid alignSelf="center" item>
               <Main
                 handleSubmit={getLocations}
                 locations={locations}

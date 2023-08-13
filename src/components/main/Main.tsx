@@ -16,18 +16,18 @@ const Main = ({
   loading,
   fetchError,
 }: Props) => {
-  const [w, setW] = useState(500);
-  const [h, setH] = useState(500);
+  const [w, setW] = useState(450);
+  const [h, setH] = useState(450);
   const [autoRotate, setAutoRotate] = useState(true);
   const globe: React.MutableRefObject<GlobeMethods> = useRef();
 
   useEffect(() => {
     if (selected) {
-      setW(250);
-      setH(250);
-    }else{
-      setW(500);
-      setH(500);
+      setW(350);
+      setH(280);
+    } else {
+      setW(450);
+      setH(450);
     }
   }, [selected]);
 
@@ -70,21 +70,16 @@ const Main = ({
   };
   return (
     <div>
-      <Grid
-        container
-        alignItems="center"
-        direction="column"
-        spacing={4}
-        marginTop="12px"
-        marginBottom="12px"
-      >
-        <Grid>
-          <Font variant="h1">Weather World</Font>
+      <Grid container alignItems="center" direction="column">
+        <Grid item>
+          <Font variant="h1" marginBottom={2}>
+            Weather World
+          </Font>
         </Grid>
         <Grid item>
           <Globe ref={globe} {...options} />
         </Grid>
-        <Grid item>
+        <Grid item marginTop={4}>
           <Search
             handleSubmit={handleSubmit}
             handleChange={handleChange}

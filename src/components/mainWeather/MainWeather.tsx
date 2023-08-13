@@ -6,11 +6,11 @@ import { getIcon } from "../utils/index.ts";
 
 const MainWeather = ({ day, selected }: props) => {
   return (
-    <Grid container direction="column" alignItems="center" maxWidth="50%">
+    <Grid container direction="column" alignItems="center">
       {selected && (
         <>
           <Grid item>
-            <Font variant="h1" marginBottom="12px" align="center">
+            <Font variant="h2" marginBottom="12px" align="center">
               {selected.name}
             </Font>
           </Grid>

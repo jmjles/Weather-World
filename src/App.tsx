@@ -151,7 +151,6 @@ const App = () => {
               </Grid>
             )}
           </Grid>
-
           {data && <Forcast Days={forcastData} />}
         </Card>
       </Container>

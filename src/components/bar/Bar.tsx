@@ -1,7 +1,11 @@
+import { Grid, Switch } from "@mui/material";
 const Bar = () => {
   return (
-    <div>Bar</div>
-  )
-}
+    <Grid container>
+      <Grid item></Grid>
+      <Grid item></Grid>
+    </Grid>
+  );
+};
 
-export default Bar
+export default Bar;

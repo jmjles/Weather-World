@@ -4,21 +4,18 @@ import { Day } from "../../types.ts";
 import { useEffect, useState } from "react";
 const Quote = ({ day }: props) => {
   const [num, setNum] = useState(0);
+  const random = () => Math.floor(Math.random() * 9);
   useEffect(() => {
-    setNum(Math.floor(Math.random() * 9));
+    let randomNum = random();
+    while (randomNum === num) {
+      randomNum = random();
+    }
+    setNum(randomNum);
   }, [day]);
 
   return (
     <div>
-      <Font>
-        <Font component="span" variant="h3">
-          "
-        </Font>
-        {quotes["Cloudy"][num]}
-        <Font component="span" variant="h3">
-          "
-        </Font>
-      </Font>
+      <Font>{quotes["Cloudy"][num]}</Font>
     </div>
   );
 };

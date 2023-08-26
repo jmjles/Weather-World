@@ -1,8 +1,8 @@
 import { Grid } from "@mui/material";
-import { Day } from "../../types";
+import { Day } from "../../types.ts";
 import WeatherCard from "../weatherCard/WeatherCard.tsx";
 
-const Forcast = ({ Days }: props) => {
+const Forecast = ({ Days, celsius }: Props) => {
   return (
     <Grid
       container
@@ -12,13 +12,14 @@ const Forcast = ({ Days }: props) => {
     >
       {Days.map((day) => (
         <Grid item key={day.day}>
-          <WeatherCard {...day} />
+          <WeatherCard {...day} celsius={celsius} />
         </Grid>
       ))}
     </Grid>
   );
 };
-type props = {
+type Props = {
   Days: Day[];
+  celsius: boolean;
 };
-export default Forcast;
+export default Forecast;

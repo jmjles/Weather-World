@@ -1,17 +1,19 @@
 import { Card, Container, Grid } from "@mui/material";
-import Forcast from "./components/forcast/Forcast.tsx";
+import Forecast from "./components/forecast/Forecast.tsx";
 import MainWeather from "./components/mainWeather/MainWeather.tsx";
 import { useEffect, useState } from "react";
 import { Day, Location } from "./types.ts";
 import {
-  formatForcastWeather,
-  getForcast,
+  formatForecastWeather,
+  getDayColor,
+  getForecast,
   getLocs,
 } from "./components/utils/index.ts";
 import Main from "./components/main/Main.tsx";
 import axios, { AxiosError } from "axios";
-import { dayTimes, skyColor } from "./theme.ts";
-import { DateTime } from "luxon";
+import { skyColor } from "./theme.ts";
+import Bar from "./components/bar/Bar.tsx";
+import TitleBar from "./components/bar/TitleBar.tsx";
 
 const App = () => {
   const [query, setQuery] = useState("thousand oaks");
@@ -21,8 +23,10 @@ const App = () => {
   const [loadingWeather, setLoadingWeather] = useState(false);
   const [fetchError, setFetchError] = useState("");
   const [data, setData] = useState<Day | undefined>();
-  const [forcastData, setForcastData] = useState([]);
+  const [forecastData, setForecastData] = useState([]);
   const [color, setColor] = useState(skyColor.black);
+  const [news, setNews] = useState(false);
+  const [celsius, setCelsius] = useState(false);
   const getLocations = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
@@ -40,7 +44,7 @@ const App = () => {
         });
         if (filtered.length === 0) {
           setFetchError("No cities found.");
-          setForcastData([]);
+          setForecastData([]);
         }
         setLocations(filtered);
         const first = filtered[0];
@@ -52,7 +56,7 @@ const App = () => {
       setLocations([]);
       setData(undefined);
       setSelected(undefined);
-      setForcastData([]);
+      setForecastData([]);
       let message = "";
       if (axios.isAxiosError(error)) {
         // errors here
@@ -72,14 +76,14 @@ const App = () => {
       const getWeather = async () => {
         try {
           setLoadingWeather(true);
-          const res2 = await getForcast(selected.lat, selected.lon);
+          const res2 = await getForecast(selected.lat, selected.lon);
           setLoadingWeather(false);
           if (res2.status === 200) {
             const formatted = res2.data.list.map((d: any, i: number) =>
-              formatForcastWeather(d, i)
+              formatForecastWeather(d, i)
             );
             setData(formatted[0]);
-            setForcastData(formatted.slice(1));
+            setForecastData(formatted.slice(1));
           }
         } catch {}
       };
@@ -87,24 +91,10 @@ const App = () => {
     }
   }, [selected]);
 
+  // Gets current time of day and sets background accordingly
   useEffect(() => {
     if (!selected) {
-      const time = Number(
-        DateTime.now()
-          .toLocaleString({
-            hour12: false,
-            timeStyle: "short",
-          })
-          .replace(":", "")
-      );
-      if (dayTimes.night <= time && time < dayTimes.sunrise)
-        setColor(skyColor.black);
-      if (dayTimes.sunrise <= time && time < dayTimes.day)
-        setColor(skyColor.orange);
-      if (dayTimes.day <= time && time < dayTimes.evening)
-        setColor(skyColor.blue);
-      if (dayTimes.evening <= time && time < dayTimes.night)
-        setColor(skyColor.orange);
+      setColor(getDayColor());
     }
   });
   return (
@@ -125,14 +115,19 @@ const App = () => {
             opacity: "85%",
           }}
         >
+          <Bar
+            celsius={celsius}
+            setCelsius={setCelsius}
+            news={news}
+            setNews={setNews}
+          />
           <Grid
             container
             justifyContent="center"
             direction="row"
-            spacing={5}
             style={{ height: selected ? "unset" : "100%" }}
           >
-            <Grid alignSelf="center" item>
+            <Grid alignSelf="center" item flexGrow={1}>
               <Main
                 handleSubmit={getLocations}
                 locations={locations}
@@ -146,12 +141,12 @@ const App = () => {
               />
             </Grid>
             {data && (
-              <Grid item>
-                <MainWeather day={data} selected={selected} />
+              <Grid item flexGrow={1}>
+                <MainWeather day={data} selected={selected} celsius={celsius} />
               </Grid>
             )}
           </Grid>
-          {data && <Forcast Days={forcastData} />}
+          {data && <Forecast Days={forecastData} celsius={celsius} />}
         </Card>
       </Container>
     </div>

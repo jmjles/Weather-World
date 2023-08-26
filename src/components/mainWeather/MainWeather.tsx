@@ -1,33 +1,33 @@
 import { Grid, Typography as Font } from "@mui/material";
 import { Day, Location } from "../../types";
-import TempatureBar from "../weatherCard/TempatureBar.tsx";
+import TemperatureBar from "../weatherCard/TemperatureBar.tsx";
 import Quote from "./Quote.tsx";
-import { getIcon } from "../utils/index.ts";
+import { convertTemp, getIcon, parseNum } from "../utils/index.ts";
 
-const MainWeather = ({ day, selected }: props) => {
+const MainWeather = ({ day, selected, celsius }: props) => {
   return (
     <Grid container direction="column" alignItems="center">
       {selected && (
         <>
           <Grid item>
-            <Font variant="h2" marginBottom="12px" align="center">
+            <Font variant="h1" marginBottom="12px" align="center">
               {selected.name}
             </Font>
           </Grid>
           <Grid item>
-            <img src={getIcon(day.code)} width="100px" height="100px" />
+            <img src={getIcon(day.code)} width="180px" height="180px" />
           </Grid>
           <Grid item>
             <Grid container direction="column">
               <Grid item>
                 <Font variant="h3" fontWeight="Bold" align="center">
-                  {day.cTemp}
+                  {celsius ? convertTemp(parseNum(day.cTemp)) : day.cTemp}
                 </Font>
               </Grid>
               <Grid item>
-                <TempatureBar {...day} spacing={5} />
+                <TemperatureBar {...day} spacing={5} celsius={celsius} />
               </Grid>
-              <Grid item>
+              <Grid item marginTop={3}>
                 <Quote day={day} />
               </Grid>
             </Grid>
@@ -40,5 +40,6 @@ const MainWeather = ({ day, selected }: props) => {
 type props = {
   day: Day;
   selected: Location;
+  celsius: boolean;
 };
 export default MainWeather;

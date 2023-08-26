@@ -1,6 +1,7 @@
 import { Grid, Typography as Font } from "@mui/material";
+import { convertTemp, parseNum } from "../utils";
 
-const Tempature = ({ title, image, alt, content }: props) => {
+const Temperature = ({ title, image, alt, content, celsius }: props) => {
   return (
     <Grid container direction="column" alignItems="center">
       <Grid item>
@@ -12,7 +13,9 @@ const Tempature = ({ title, image, alt, content }: props) => {
       </Grid>
       <Grid item>
         <Font variant="subtitle2" fontWeight="Bold">
-          {content}
+          {title !== "Rain" && celsius
+            ? convertTemp(parseNum(content))
+            : content}
         </Font>
       </Grid>
     </Grid>
@@ -23,5 +26,6 @@ type props = {
   image?: string;
   alt?: string;
   content: string;
+  celsius: boolean;
 };
-export default Tempature;
+export default Temperature;

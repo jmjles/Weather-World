@@ -148,7 +148,7 @@ const App = () => {
                 color={color}
               />
               <Typography align="center">
-                *Not Actual daily weather due to APi restriction
+                *Not Actual daily weather due to API restriction
               </Typography>
             </Grid>
             {data && (

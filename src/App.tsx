@@ -1,4 +1,4 @@
-import { Card, Container, Grid } from "@mui/material";
+import { Card, Container, Grid, Typography } from "@mui/material";
 import Forecast from "./components/forecast/Forecast.tsx";
 import MainWeather from "./components/mainWeather/MainWeather.tsx";
 import { useEffect, useState } from "react";
@@ -88,7 +88,7 @@ const App = () => {
       };
       getWeather();
     }
-    if(fetchError) setData(undefined)
+    if (fetchError) setData(undefined);
   }, [selected]);
 
   useEffect(() => {
@@ -147,6 +147,9 @@ const App = () => {
                 loading={loading}
                 color={color}
               />
+              <Typography align="center">
+                *Not Actual daily weather due to APi restriction
+              </Typography>
             </Grid>
             {data && (
               <Grid item flexGrow={1}>

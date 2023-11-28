@@ -15,7 +15,6 @@ const Main = ({
   handleSelect,
   loading,
   fetchError,
-  color,
 }: Props) => {
   const [w, setW] = useState(450);
   const [h, setH] = useState(450);
@@ -59,7 +58,7 @@ const Main = ({
     height: h,
     width: w,
     globeImageUrl: "//unpkg.com/three-globe/example/img/earth-night.jpg",
-    backgroundColor: color,
+    backgroundColor: "rgba(0, 0, 0, 0)",
     labelsData: locations,
     labelLat: (l: Location) => l.lat,
     labelLng: (l: Location) => l.lon,
@@ -100,6 +99,5 @@ interface Props extends SearchProps {
   handleSelect: (val: Location) => void;
   loading: boolean;
   fetchError: string;
-  color: string;
 }
 export default Main;

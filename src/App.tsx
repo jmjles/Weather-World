@@ -1,4 +1,12 @@
-import { Card, Container, Grid, Typography } from "@mui/material";
+import {
+  Card,
+  Container,
+  Grid,
+  Typography,
+  ThemeProvider,
+  createTheme,
+  Paper,
+} from "@mui/material";
 import Forecast from "./components/forecast/Forecast.tsx";
 import MainWeather from "./components/mainWeather/MainWeather.tsx";
 import { useEffect, useState } from "react";
@@ -13,6 +21,8 @@ import Main from "./components/main/Main.tsx";
 import axios, { AxiosError } from "axios";
 import Bar from "./components/bar/Bar.tsx";
 import Loading from "./components/loading/Loading.tsx";
+import Colors from "./components/assets/skyColors.ts";
+import anime from "animejs/lib/anime.es";
 
 const App = () => {
   const [query, setQuery] = useState("thousand oaks");
@@ -23,7 +33,11 @@ const App = () => {
   const [fetchError, setFetchError] = useState("");
   const [data, setData] = useState<Day | undefined>();
   const [forecastData, setForecastData] = useState([]);
-  const [color, setColor] = useState("");
+  const [color, setColor] = useState(Colors["Clouds"]["Day"]);
+  const [prevColor, setPrevColor] = useState(color);
+  const [textColor, setTextColor] = useState(color.textColor);
+  const [backgroundColor, setBackgroundColor] = useState(color.backgroundColor);
+  const [borderColor, setBorderColor] = useState(color.borderColor);
   const [celsius, setCelsius] = useState(false);
   const [showLoading, setShowLoading] = useState(false);
   const getLocations = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -106,61 +120,132 @@ const App = () => {
     if (!selected) setColor(getDayColor());
     else if (data) setColor(getDayColor(data.weather));
   });
+
+  useEffect(() => {
+    let c = prevColor;
+    anime({
+      targets: c,
+      backgroundColor: color.backgroundColor,
+      textColor: color.textColor,
+      borderColor: color.borderColor,
+      easing: "linear",
+      duration: 500,
+      update: () => {
+        setBackgroundColor(c.backgroundColor);
+        setBorderColor(c.borderColor);
+        setTextColor(c.textColor);
+      },
+      complete: () => {
+        if (color.backgroundColor !== c.backgroundColor) setPrevColor(color);
+      },
+    });
+  }, [color]);
+  const theme = createTheme({
+    typography: {
+      allVariants: {
+        color: textColor,
+      },
+      h1: { fontSize: 64 },
+      h2: { fontSize: 36 },
+      subtitle1: { fontSize: 12 },
+    },
+    components: {
+      MuiCard: {
+        styleOverrides: {
+          root: {
+            borderColor: borderColor,
+            backgroundColor: backgroundColor,
+          },
+        },
+      },
+      MuiAutocomplete: {
+        defaultProps: {
+          PaperComponent: (props) => (
+            <Paper sx={{ backgroundColor, color: textColor, borderColor }}>
+              {props.children}
+            </Paper>
+          ),
+        },
+      },
+      MuiInputBase: {
+        styleOverrides: {
+          root: {
+            color: textColor,
+            backgroundColor,
+          },
+        },
+      },
+    },
+  });
   return (
-    <div style={{ backgroundColor: color, width: "100vw", height: "100vh" }}>
-      <Container
+    <ThemeProvider theme={theme}>
+      <div
         style={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%,-50%)",
+          backgroundColor: "rgba(242, 242, 242, 1)",
+          width: "100vw",
+          height: "100vh",
         }}
       >
-        <Card
+        <Container
           style={{
-            height: "85vh",
-            overflowY: data && !showLoading ? "auto" : "hidden",
-            overflowX: "hidden",
-            opacity: "85%",
-            position: "relative",
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%,-50%)",
           }}
         >
-          <Loading show={showLoading} />
-          <Bar celsius={celsius} setCelsius={setCelsius} />
-          <Grid
-            container
-            justifyContent="center"
-            direction="row"
-            overflow="hidden"
-            style={{ height: selected ? "unset" : "calc(100% - 38px )" }}
+          <Card
+            id="card"
+            sx={{
+              height: "85vh",
+              overflowY: data && !showLoading ? "auto" : "hidden",
+              overflowX: "hidden",
+              opacity: "85%",
+              position: "relative",
+            }}
           >
-            <Grid alignSelf="center" item flexGrow={1}>
-              <Main
-                handleSubmit={getLocations}
-                locations={locations}
-                query={query}
-                selected={selected}
-                handleLocation={setSelected}
-                handleChange={handleChange}
-                handleSelect={handleSelect}
-                fetchError={fetchError}
-                loading={loading}
-                color={color}
-              />
-              <Typography align="center">
-                *Not Actual daily weather due to API restriction
-              </Typography>
-            </Grid>
-            {data && (
-              <Grid item flexGrow={1}>
-                <MainWeather day={data} selected={selected} celsius={celsius} />
+            <Loading show={showLoading} />
+            <Bar celsius={celsius} setCelsius={setCelsius} />
+            <Grid
+              container
+              justifyContent="center"
+              direction="row"
+              overflow="hidden"
+              style={{ height: selected ? "unset" : "calc(100% - 38px )" }}
+            >
+              <Grid alignSelf="center" item flexGrow={1}>
+                <Main
+                  handleSubmit={getLocations}
+                  locations={locations}
+                  query={query}
+                  selected={selected}
+                  handleLocation={setSelected}
+                  handleChange={handleChange}
+                  handleSelect={handleSelect}
+                  fetchError={fetchError}
+                  loading={loading}
+                />
+                {data && (
+                  <Typography align="center" id="msg">
+                    *Not actual daily weather due to API restriction
+                  </Typography>
+                )}
               </Grid>
-            )}
-          </Grid>
-          {data && <Forecast Days={forecastData} celsius={celsius} />}
-        </Card>
-      </Container>
-    </div>
+              {data && (
+                <Grid item flexGrow={1}>
+                  <MainWeather
+                    day={data}
+                    selected={selected}
+                    celsius={celsius}
+                  />
+                </Grid>
+              )}
+            </Grid>
+            {data && <Forecast Days={forecastData} celsius={celsius} />}
+          </Card>
+        </Container>
+      </div>
+    </ThemeProvider>
   );
 };
 export default App;

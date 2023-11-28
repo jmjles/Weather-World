@@ -11,9 +11,8 @@ import {
 } from "./components/utils/index.ts";
 import Main from "./components/main/Main.tsx";
 import axios, { AxiosError } from "axios";
-import { skyColor } from "./theme.ts";
 import Bar from "./components/bar/Bar.tsx";
-import TitleBar from "./components/bar/TitleBar.tsx";
+import Loading from "./components/loading/Loading.tsx";
 
 const App = () => {
   const [query, setQuery] = useState("thousand oaks");
@@ -24,12 +23,13 @@ const App = () => {
   const [fetchError, setFetchError] = useState("");
   const [data, setData] = useState<Day | undefined>();
   const [forecastData, setForecastData] = useState([]);
-  const [color, setColor] = useState(skyColor.black);
-  const [news, setNews] = useState(false);
+  const [color, setColor] = useState("");
   const [celsius, setCelsius] = useState(false);
+  const [showLoading, setShowLoading] = useState(false);
   const getLocations = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
+      setLoading(true);
       const res = await getLocs(query);
       if (res.status === 200) {
         const uni: any = {};
@@ -47,8 +47,7 @@ const App = () => {
           setForecastData([]);
         }
         setLocations(filtered);
-        const first = filtered[0];
-        handleSelect(first);
+        handleSelect(filtered[0]);
       }
     } catch (er) {
       const error = er as Error | AxiosError;
@@ -77,7 +76,6 @@ const App = () => {
         try {
           setLoadingWeather(true);
           const res2 = await getForecast(selected.lat, selected.lon);
-          setLoadingWeather(false);
           if (res2.status === 200) {
             const formatted = res2.data.list.map((d: any, i: number) =>
               formatForecastWeather(d, i)
@@ -85,17 +83,28 @@ const App = () => {
             setData(formatted[0]);
             setForecastData(formatted.slice(1));
           }
+          setLoading(false);
         } catch {}
       };
       getWeather();
     }
+    if(fetchError) setData(undefined)
   }, [selected]);
+
+  useEffect(() => {
+    if (loading || loadingWeather) {
+      setShowLoading(true);
+      const t = setTimeout(() => {
+        setShowLoading(false);
+      }, 3000);
+      return () => clearTimeout(t);
+    }
+  }, [loading, loadingWeather]);
 
   // Gets current time of day and sets background accordingly
   useEffect(() => {
-    if (!selected) {
-      setColor(getDayColor());
-    }
+    if (!selected) setColor(getDayColor());
+    else if (data) setColor(getDayColor(data.weather));
   });
   return (
     <div style={{ backgroundColor: color, width: "100vw", height: "100vh" }}>
@@ -110,22 +119,20 @@ const App = () => {
         <Card
           style={{
             height: "85vh",
-            overflowY: "auto",
+            overflowY: data && !showLoading ? "auto" : "hidden",
             overflowX: "hidden",
             opacity: "85%",
+            position: "relative",
           }}
         >
-          <Bar
-            celsius={celsius}
-            setCelsius={setCelsius}
-            news={news}
-            setNews={setNews}
-          />
+          <Loading show={showLoading} />
+          <Bar celsius={celsius} setCelsius={setCelsius} />
           <Grid
             container
             justifyContent="center"
             direction="row"
-            style={{ height: selected ? "unset" : "100%" }}
+            overflow="hidden"
+            style={{ height: selected ? "unset" : "calc(100% - 38px )" }}
           >
             <Grid alignSelf="center" item flexGrow={1}>
               <Main
@@ -138,6 +145,7 @@ const App = () => {
                 handleSelect={handleSelect}
                 fetchError={fetchError}
                 loading={loading}
+                color={color}
               />
             </Grid>
             {data && (

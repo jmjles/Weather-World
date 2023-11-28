@@ -15,7 +15,7 @@ const Quote = ({ day }: props) => {
 
   return (
     <div>
-      <Font>{quotes["Cloudy"][num]}</Font>
+      <Font>{quotes[day.weather][num] || ""}</Font>
     </div>
   );
 };

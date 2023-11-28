@@ -1,5 +1,7 @@
 import axios from "axios";
-import { dayTimes, skyColor } from "../../theme";
+import { Day } from "../../types";
+import skyColors from "../assets/skyColors";
+const dayTimes = { sunrise: 500, day: 800, evening: 1800, night: 2000 };
 const { DateTime } = require("luxon");
 const api = "d74895cbc352ffdb395938590bc15b01";
 
@@ -37,7 +39,7 @@ export const getLocationName = (
   country: string
 ) => (state ? `${name}, ${state}, ${country}` : `${name}, ${country}`);
 
-export const getDayColor = () => {
+export const getDayColor = (weather?: Day["weather"]) => {
   const time = Number(
     DateTime.now()
       .toLocaleString({
@@ -46,11 +48,16 @@ export const getDayColor = () => {
       })
       .replace(":", "")
   );
-
-  if (dayTimes.night <= time && time < dayTimes.sunrise) return skyColor.black;
-  if (dayTimes.sunrise <= time && time < dayTimes.day) return skyColor.orange;
-  if (dayTimes.day <= time && time < dayTimes.evening) return skyColor.blue;
-  if (dayTimes.evening <= time && time < dayTimes.night) return skyColor.orange;
+  const day =
+    dayTimes.night <= time || time < dayTimes.sunrise
+      ? "Night"
+      : dayTimes.sunrise <= time || time < dayTimes.day
+      ? "Dawn"
+      : dayTimes.day <= time || time < dayTimes.evening
+      ? "Day"
+      : "Dawn";
+  if (!weather) return skyColors["Clouds"][day];
+  return skyColors[weather][day];
 };
 
 export const parseNum = (N: string) =>

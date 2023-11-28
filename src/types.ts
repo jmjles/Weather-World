@@ -5,7 +5,22 @@ export type Day = {
   high: string;
   perc: string;
   code: string;
-  weather: string;
+  weather:
+    | "Clear"
+    | "Snow"
+    | "Rain"
+    | "Drizzle"
+    | "Clouds"
+    | "Thunderstorm"
+    | "Mist"
+    | "Smoke"
+    | "Haze"
+    | "Dust"
+    | "Fog"
+    | "Sand"
+    | "Ash"
+    | "Squall"
+    | "Tornado";
 };
 
 export type Location = {

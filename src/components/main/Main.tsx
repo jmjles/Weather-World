@@ -3,7 +3,7 @@ import { Location, Search as SearchProps } from "../../types";
 import Search from "../search/Search.tsx";
 import { Typography as Font, Grid } from "@mui/material";
 import { getLocationName } from "../utils/index.ts";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 const Main = ({
   handleSubmit,
@@ -16,20 +16,34 @@ const Main = ({
   loading,
   fetchError,
 }: Props) => {
+  const [el, setEl] = useState(450);
   const [w, setW] = useState(450);
   const [h, setH] = useState(450);
   const [autoRotate, setAutoRotate] = useState(true);
   const globe: React.MutableRefObject<GlobeMethods> = useRef();
 
-  useEffect(() => {
+  const resize = () => {
+    setEl(document.getElementById("card").clientHeight);
+  };
+
+  useLayoutEffect(() => {
+    const x = el - el * 0.5;
+    const y = el - el * 0.4;
     if (selected) {
-      setW(350);
-      setH(280);
+      setW(x);
+      setH(x);
     } else {
-      setW(450);
-      setH(450);
+      setW(y);
+      setH(y);
     }
-  }, [selected]);
+  }, [el, selected]);
+
+  useLayoutEffect(() => {
+    window.addEventListener("resize", resize);
+    return () => {
+      window.removeEventListener("resize", resize);
+    };
+  }, []);
 
   useEffect(() => {
     if (selected) {

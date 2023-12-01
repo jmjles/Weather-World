@@ -43,6 +43,7 @@ const App = () => {
   const getLocations = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
+      document.getElementById("card").scrollTo({top:0})
       setLoading(true);
       const res = await getLocs(query);
       if (res.status === 200) {

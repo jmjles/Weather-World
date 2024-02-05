@@ -9,7 +9,7 @@ export const getIcon = (code: string) =>
   `https://openweathermap.org/img/wn/${code}@2x.png`;
 
 const weather = axios.create({
-  baseURL: "http://api.openweathermap.org/",
+  baseURL: "https://api.openweathermap.org/",
   params: { appid: api },
 });
 

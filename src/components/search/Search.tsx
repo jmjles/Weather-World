@@ -1,7 +1,7 @@
 import { Autocomplete, Button, Grid, TextField } from "@mui/material";
 import { Location, Search as SearchProps } from "../../types";
 import { getLocationName } from "../utils";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 const Search = ({
   handleChange,
   handleSubmit,
@@ -20,7 +20,9 @@ const Search = ({
       setOpen((prev) => !prev);
     }
   };
-
+  useEffect(() => {
+    if (!loading) setOpen(false);
+  }, [loading]);
   return (
     <Grid
       container

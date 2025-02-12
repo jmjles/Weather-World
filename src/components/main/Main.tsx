@@ -22,12 +22,6 @@ const Main = ({
   const [autoRotate, setAutoRotate] = useState(true);
   const globe: React.MutableRefObject<GlobeMethods> = useRef();
 
-  const resize = () => {
-    const card = document.getElementById("card").clientHeight;
-    const WeatherCard = document.getElementById("MainWeather").clientHeight;
-    setEl(WeatherCard ? WeatherCard : card);
-  };
-
   useLayoutEffect(() => {
     const x = el;
     const y = el;
@@ -41,11 +35,10 @@ const Main = ({
   }, [el, selected]);
 
   useLayoutEffect(() => {
-    window.addEventListener("resize", resize);
-    return () => {
-      window.removeEventListener("resize", resize);
-    };
-  }, []);
+    const card = document.getElementById("card").clientHeight;
+    const WeatherCard = document.getElementById("MainWeather").clientHeight;
+    setEl(WeatherCard ? WeatherCard : card);
+  }, [selected]);
 
   useEffect(() => {
     if (selected) {

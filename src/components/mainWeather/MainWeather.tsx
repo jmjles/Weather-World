@@ -25,7 +25,7 @@ const MainWeather = ({
       {selected && (
         <Grid container direction="column" alignItems="center" id="Main">
           <Grid item>
-            <img src={getIcon(day.code)} width="300px" height="300px" />
+            <img src={getIcon(day.code)} width="200px" height="200px" />
           </Grid>
           <Grid item>
             <Grid container direction="column">

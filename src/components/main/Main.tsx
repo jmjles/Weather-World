@@ -23,12 +23,12 @@ const Main = ({
   const globe: React.MutableRefObject<GlobeMethods> = useRef();
 
   const resize = () => {
-    setEl(document.getElementById("card").clientHeight);
+    setEl(document.getElementById("MainWeather").clientHeight);
   };
 
   useLayoutEffect(() => {
-    const x = el - el * 0.5;
-    const y = el - el * 0.4;
+    const x = el;
+    const y = el;
     if (selected) {
       setW(x);
       setH(x);
@@ -40,6 +40,7 @@ const Main = ({
 
   useLayoutEffect(() => {
     window.addEventListener("resize", resize);
+    resize();
     return () => {
       window.removeEventListener("resize", resize);
     };
@@ -71,7 +72,7 @@ const Main = ({
   const options: GlobeProps = {
     height: h,
     width: w,
-    globeImageUrl: "//unpkg.com/three-globe/example/img/earth-night.jpg",
+    globeImageUrl: "https://unpkg.com/three-globe/example/img/earth-day.jpg",
     backgroundColor: "rgba(0, 0, 0, 0)",
     labelsData: locations,
     labelLat: (l: Location) => l.lat,

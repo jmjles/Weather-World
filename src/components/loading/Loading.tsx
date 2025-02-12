@@ -1,4 +1,4 @@
-import { Card, Grid, Typography as Font } from "@mui/material";
+import { Card, Typography as Font } from "@mui/material";
 import Weather from "react-animated-weather";
 import { useEffect, useState } from "react";
 import anime from "animejs/lib/anime.es";

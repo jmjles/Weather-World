@@ -1,6 +1,6 @@
 import { Grid } from "@mui/material";
 import Temperature from "./Temperature.tsx";
-const TemperatureBar = ({ spacing, low, perc, high, celsius }: Props) => {
+const TemperatureBar = ({ spacing, low, percent, high, celsius }: Props) => {
   return (
     <Grid
       container
@@ -13,7 +13,7 @@ const TemperatureBar = ({ spacing, low, perc, high, celsius }: Props) => {
         <Temperature title="Low" content={low} celsius={celsius} />
       </Grid>
       <Grid item>
-        <Temperature title="Rain" content={perc} celsius={celsius} />
+        <Temperature title="Rain" content={percent} celsius={celsius} />
       </Grid>
       <Grid item>
         <Temperature title="High" content={high} celsius={celsius} />
@@ -24,7 +24,7 @@ const TemperatureBar = ({ spacing, low, perc, high, celsius }: Props) => {
 type Props = {
   spacing: number;
   low: string;
-  perc: string;
+  percent: string;
   high: string;
   celsius: boolean;
 };

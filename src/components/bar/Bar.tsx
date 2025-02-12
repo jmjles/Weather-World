@@ -1,9 +1,13 @@
 import { Grid, Switch, Stack, Typography as Font } from "@mui/material";
 const Bar = (props: Props) => {
-  const { setCelsius, celsius } = props;
+  const { setCelsius, celsius, display } = props;
 
   return (
-    <Grid container justifyContent="space-around">
+    <Grid
+      container
+      justifyContent="space-around"
+      display={display ? "flex" : "none"}
+    >
       <Grid item visibility="hidden">
         <Stack direction="row" spacing={1} alignItems="center">
           <Font>F°</Font>
@@ -35,6 +39,7 @@ const Bar = (props: Props) => {
 type Props = {
   setCelsius: React.Dispatch<React.SetStateAction<boolean>>;
   celsius: boolean;
+  display: boolean;
 };
 
 export default Bar;

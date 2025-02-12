@@ -1,7 +1,7 @@
 import { Typography as Font } from "@mui/material";
 import quotes from "../assets/quotes.ts";
-import { Day } from "../../types.ts";
 import { useEffect, useState } from "react";
+import { WeatherFormatted } from "../utils/index.ts";
 const Quote = ({ day }: props) => {
   const [num, setNum] = useState(0);
   const random = () => Math.floor(Math.random() * 9);
@@ -20,6 +20,6 @@ const Quote = ({ day }: props) => {
   );
 };
 type props = {
-  day: Day;
+  day: WeatherFormatted;
 };
 export default Quote;

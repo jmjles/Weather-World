@@ -1,21 +1,31 @@
 import { Grid, Typography as Font } from "@mui/material";
-import { Day, Location } from "../../types";
+import { Location } from "../../types";
 import TemperatureBar from "../weatherCard/TemperatureBar.tsx";
 import Quote from "./Quote.tsx";
-import { convertTemp, getIcon, parseNum } from "../utils/index.ts";
+import {
+  WeatherFormatted,
+  convertTemp,
+  getIcon,
+  parseNum,
+} from "../utils/index.ts";
+import Bar from "../bar/Bar.tsx";
 
-const MainWeather = ({ day, selected, celsius }: props) => {
+const MainWeather = ({
+  day,
+  selected,
+  celsius,
+  setCelsius,
+  loading,
+}: props) => {
   return (
-    <Grid container direction="column" alignItems="center">
+    <>
+      <Font variant="h1" marginBottom="12px" align="center">
+        {selected.name}
+      </Font>
       {selected && (
-        <>
+        <Grid container direction="column" alignItems="center" id="MainWeather">
           <Grid item>
-            <Font variant="h1" marginBottom="12px" align="center">
-              {selected.name}
-            </Font>
-          </Grid>
-          <Grid item>
-            <img src={getIcon(day.code)} width="180px" height="180px" />
+            <img src={getIcon(day.code)} width="300px" height="300px" />
           </Grid>
           <Grid item>
             <Grid container direction="column">
@@ -32,14 +42,21 @@ const MainWeather = ({ day, selected, celsius }: props) => {
               </Grid>
             </Grid>
           </Grid>
-        </>
+        </Grid>
       )}
-    </Grid>
+      <Bar
+        celsius={celsius}
+        setCelsius={setCelsius}
+        display={!loading && day?.day?.length > 0}
+      />
+    </>
   );
 };
 type props = {
-  day: Day;
+  day: WeatherFormatted;
   selected: Location;
+  setCelsius: any;
   celsius: boolean;
+  loading: boolean;
 };
 export default MainWeather;

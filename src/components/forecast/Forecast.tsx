@@ -1,6 +1,6 @@
 import { Grid } from "@mui/material";
-import { Day } from "../../types.ts";
 import WeatherCard from "../weatherCard/WeatherCard.tsx";
+import { WeatherFormatted } from "../utils/index.ts";
 
 const Forecast = ({ Days, celsius }: Props) => {
   return (
@@ -19,7 +19,7 @@ const Forecast = ({ Days, celsius }: Props) => {
   );
 };
 type Props = {
-  Days: Day[];
+  Days: WeatherFormatted[];
   celsius: boolean;
 };
 export default Forecast;

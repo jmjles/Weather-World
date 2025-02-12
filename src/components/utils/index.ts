@@ -1,7 +1,5 @@
-import axios from "axios";
-import { Day } from "../../types";
-import skyColors from "../assets/skyColors";
-const dayTimes = { sunrise: 500, day: 800, evening: 1800, night: 2000 };
+import axios, { AxiosResponse } from "axios";
+import { WeatherNameType, WeatherResponse, WeatherType } from "../../types";
 const { DateTime } = require("luxon");
 const api = "d74895cbc352ffdb395938590bc15b01";
 
@@ -16,49 +14,77 @@ const weather = axios.create({
 export const getLocs = (query: string) =>
   weather.get("geo/1.0/direct", { params: { q: query, limit: 5 } });
 
-export const getForecast = (lat: number, lon: number) =>
+export const getForecast = (
+  lat: number,
+  lon: number
+): Promise<AxiosResponse<WeatherResponse>> =>
   weather.get("data/2.5/forecast", {
-    params: { lat, lon, units: "imperial", cnt: 6 },
+    params: { lat, lon, units: "imperial" },
   });
 
-export const formatForecastWeather = (weather: any, day: number) => {
-  return {
-    day: DateTime.now().plus({ days: day }).weekdayLong,
-    cTemp: `${parseNum(weather.main.temp)}°F`,
-    low: `${parseNum(weather.main.temp_min)}°F`,
-    high: `${parseNum(weather.main.temp_max)}°F`,
-    perc: `${weather.pop}%`,
-    code: weather.weather[0].icon,
-    weather: weather.weather[0].main,
-  };
+export const createWeather = (weather: WeatherType[]): WeatherFormatted[] => {
+  const days: Record<string, WeatherType[]> = {};
+  const formattedDays: WeatherFormatted[] = [];
+  weather.forEach((w) => {
+    const date = DateTime.fromFormat(w.dt_txt, "yyyy-MM-dd TT").toFormat(
+      "yyyy/LL/dd"
+    );
+    const day = days[date];
+    if (!day) {
+      days[date] = [w];
+      return;
+    }
+    day.push(w);
+  });
+
+  Object.keys(days).forEach((d, i) => {
+    const currentDay = days[d];
+    const newDay: WeatherFormatted = {
+      code: "01n",
+      cTemp: "",
+      day: DateTime.now().plus({ days: i }).weekdayLong,
+      high: "",
+      low: "",
+      percent: "",
+      weather: "Clear",
+    };
+    let precipitation = false;
+    currentDay.forEach((d, i) => {
+      if (parseNum(newDay.low) > d.main.temp_min || i === 0)
+        newDay.low = `${parseNum(`${d.main.temp_min}`)}°F`;
+
+      if (parseNum(newDay.high) < d.main.temp_max || i === 0)
+        newDay.high = `${parseNum(`${d.main.temp_max}`)}°F`;
+
+      if (parseNum(newDay.percent) < d.pop || i === 0)
+        newDay.percent = `${d.pop * 100}%`;
+
+      if (!precipitation && d.weather[0].main !== "Clear") {
+        precipitation = true;
+        newDay.weather = d.weather[0].main;
+        newDay.code = d.weather[0].icon;
+        newDay.cTemp = `${parseNum(`${d.main.temp}`)}°F`;
+      }
+    });
+    formattedDays.push(newDay);
+  });
+  return formattedDays;
 };
 
+export interface WeatherFormatted {
+  day: string;
+  cTemp: string;
+  low: string;
+  high: string;
+  percent: string;
+  code: string;
+  weather: WeatherNameType;
+}
 export const getLocationName = (
   name: string,
   state: string | undefined,
   country: string
 ) => (state ? `${name}, ${state}, ${country}` : `${name}, ${country}`);
-
-export const getDayColor = (weather?: Day["weather"]) => {
-  const time = Number(
-    DateTime.now()
-      .toLocaleString({
-        hour12: false,
-        timeStyle: "short",
-      })
-      .replace(":", "")
-  );
-  const day =
-    dayTimes.night <= time || time < dayTimes.sunrise
-      ? "Night"
-      : dayTimes.sunrise <= time || time < dayTimes.day
-      ? "Dawn"
-      : dayTimes.day <= time || time < dayTimes.evening
-      ? "Day"
-      : "Dawn";
-  if (!weather) return skyColors["Clouds"][day];
-  return skyColors[weather][day];
-};
 
 export const parseNum = (N: string) =>
   Number.parseFloat(Number.parseFloat(N).toFixed(0));

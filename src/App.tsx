@@ -10,10 +10,10 @@ import {
 import Forecast from "./components/forecast/Forecast.tsx";
 import MainWeather from "./components/mainWeather/MainWeather.tsx";
 import { useEffect, useState } from "react";
-import { Day, Location } from "./types.ts";
+import { Location } from "./types.ts";
 import {
-  formatForecastWeather,
-  getDayColor,
+  WeatherFormatted,
+  createWeather,
   getForecast,
   getLocs,
 } from "./components/utils/index.ts";
@@ -25,13 +25,13 @@ import Colors from "./components/assets/skyColors.ts";
 import anime from "animejs/lib/anime.es";
 
 const App = () => {
-  const [query, setQuery] = useState("thousand oaks");
+  const [query, setQuery] = useState("");
   const [locations, setLocations] = useState<Location[]>([]);
   const [selected, setSelected] = useState<Location>();
   const [loading, setLoading] = useState(false);
   const [loadingWeather, setLoadingWeather] = useState(false);
   const [fetchError, setFetchError] = useState("");
-  const [data, setData] = useState<Day | undefined>();
+  const [data, setData] = useState<WeatherFormatted | undefined>();
   const [forecastData, setForecastData] = useState([]);
   const [color, setColor] = useState(Colors["Clouds"]["Day"]);
   const [prevColor, setPrevColor] = useState(color);
@@ -43,7 +43,7 @@ const App = () => {
   const getLocations = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      document.getElementById("card").scrollTo({top:0})
+      document.getElementById("card").scrollTo({ top: 0 });
       setLoading(true);
       const res = await getLocs(query);
       if (res.status === 200) {
@@ -92,9 +92,7 @@ const App = () => {
           setLoadingWeather(true);
           const res2 = await getForecast(selected.lat, selected.lon);
           if (res2.status === 200) {
-            const formatted = res2.data.list.map((d: any, i: number) =>
-              formatForecastWeather(d, i)
-            );
+            const formatted = createWeather(res2.data.list);
             setData(formatted[0]);
             setForecastData(formatted.slice(1));
           }
@@ -115,12 +113,6 @@ const App = () => {
       return () => clearTimeout(t);
     }
   }, [loading, loadingWeather]);
-
-  // Gets current time of day and sets background accordingly
-  useEffect(() => {
-    if (!selected) setColor(getDayColor());
-    else if (data) setColor(getDayColor(data.weather));
-  });
 
   useEffect(() => {
     let c = prevColor;
@@ -203,10 +195,10 @@ const App = () => {
               overflowX: "hidden",
               opacity: "85%",
               position: "relative",
+              paddingTop: 2,
             }}
           >
             <Loading show={showLoading} />
-            <Bar celsius={celsius} setCelsius={setCelsius} />
             <Grid
               container
               justifyContent="center"
@@ -226,11 +218,6 @@ const App = () => {
                   fetchError={fetchError}
                   loading={loading}
                 />
-                {data && (
-                  <Typography align="center" id="msg">
-                    *Not actual daily weather due to API restriction
-                  </Typography>
-                )}
               </Grid>
               {data && (
                 <Grid item flexGrow={1}>
@@ -238,6 +225,8 @@ const App = () => {
                     day={data}
                     selected={selected}
                     celsius={celsius}
+                    setCelsius={setCelsius}
+                    loading={loading}
                   />
                 </Grid>
               )}

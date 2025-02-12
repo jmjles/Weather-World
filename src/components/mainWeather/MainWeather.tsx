@@ -23,9 +23,9 @@ const MainWeather = ({
         {selected.name}
       </Font>
       {selected && (
-        <Grid container direction="column" alignItems="center" id="MainWeather">
+        <Grid container direction="column" alignItems="center" id="Main">
           <Grid item>
-            <img src={getIcon(day.code)} width="300px" height="300px" />
+            <img src={getIcon(day.code)} width="250px" height="250px" />
           </Grid>
           <Grid item>
             <Grid container direction="column">

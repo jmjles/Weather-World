@@ -23,10 +23,9 @@ const Main = ({
   const globe: React.MutableRefObject<GlobeMethods> = useRef();
 
   const resize = () => {
-    setEl(
-      document.getElementById("MainWeather").clientHeight ||
-        document.getElementById("card").clientHeight
-    );
+    const card = document.getElementById("card").clientHeight;
+    const WeatherCard = document.getElementById("MainWeather").clientHeight;
+    setEl(WeatherCard ? WeatherCard : card);
   };
 
   useLayoutEffect(() => {

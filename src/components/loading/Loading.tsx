@@ -10,9 +10,8 @@ const Loading = ({ show }: Props) => {
   const [animated, setAnimated] = useState(false);
   useEffect(() => {
     if (show) {
-      setMsg(
-        loadingMessages[Math.floor(Math.random() * loadingMessages.length - 1)]
-      );
+      const msgIndex = Math.abs(Math.floor(Math.random() * loadingMessages.length-1));
+      setMsg(loadingMessages[msgIndex]);
       let pointer = 0;
       if (!animated) {
         setAnimated(true);

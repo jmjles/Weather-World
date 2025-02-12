@@ -35,10 +35,10 @@ const Main = ({
   }, [el, selected]);
 
   useLayoutEffect(() => {
-    const card = document.getElementById("card").clientHeight;
-    const WeatherCard = document.getElementById("MainWeather").clientHeight;
+    const card = document.getElementById("card")?.clientHeight * .5;
+    const WeatherCard = document.getElementById("Main")?.clientHeight;
     setEl(WeatherCard ? WeatherCard : card);
-  }, [selected]);
+  }, [loading]);
 
   useEffect(() => {
     if (selected) {
